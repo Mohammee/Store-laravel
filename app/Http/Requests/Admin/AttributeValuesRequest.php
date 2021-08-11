@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Http\Requests\Admin;
+
+use App\Models\OptionValue;
+use Illuminate\Foundation\Http\FormRequest;
+
+class AttributeValuesRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return auth('admin')->check();
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'name.*' => 'required|max:255|string|regex:/^[a-zA-Z_\p{Arabic}\p{N} ]+\b/ui'
+        ];
+    }
+
+
+    public function persist(OptionValue $value)
+    {
+
+
+            $value->option_id = $this->value ? $value->option_id : $this->attribute_id;
+            $value->save();
+
+
+        $value->udaeteOrCreateTranslate([
+            'name' => $this->name
+        ]);
+    }
+
+}
